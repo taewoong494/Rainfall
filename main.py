@@ -16,7 +16,15 @@ def fetch():
          "tm2": now.strftime("%Y%m%d%H00"), "stn": STN, "help": 0, "authKey": AUTH}
     # ⚠ URL은 API허브에서 활용신청한 AWS 시간자료 샘플 URL로 교체
     url = "https://apihub.kma.go.kr/api/typ01/url/awsh.php?var=RN&tm=201508121500&help=1&authKey=Ib0uINXMRBi9LiDVzCQYHw" + urllib.parse.urlencode(p)
-    raw = urllib.request.urlopen(url, timeout=30).read().decode("euc-kr", "ignore")
+  import time
+def _get(url, tries=3):
+    for i in range(tries):
+        try:
+            return urllib.request.urlopen(url, timeout=90).read()
+        except Exception:
+            if i == tries-1: raise
+            time.sleep(15)  
+    raw =  _get(url).decode("euc-kr", "ignore")
     out = []
     for ln in raw.splitlines():
         if not ln or ln.startswith("#"): continue
