@@ -1,0 +1,22 @@
+name: aws-rain
+on:
+  schedule:
+    - cron: "10 * * * *"     # 매시 10분(UTC, 부하 시 지연 가능)
+  workflow_dispatch:
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python main.py
+        env:
+          KMA_KEY: ${{ secrets.KMA_KEY }}
+          WEBHOOK: ${{ secrets.WEBHOOK }}
+      - run: |
+          git config user.name bot
+          git config user.email bot@users.noreply.github.com
+          git add -A && git commit -m data || exit 0
+          git push
